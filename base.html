@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Bloodgroup Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-red-800 via-pink-700 to-red-600 text-white p-4 shadow-lg">
+        <div class="w-full flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide">BloodGroup App</h1>
+            <div class="flex space-x-4">
+                <a href="{{ url_for('home') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Home</a>
+                {% if 'username' in session %}
+                <a href="{{ url_for('working') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Working</a>
+                <a href="{{ url_for('fundus_upload') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Prediction</a>
+                <a href="{{ url_for('analysis') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Accuracy</a>
+<a href="{{ url_for('chart') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Analysis</a>
+                <a href="{{ url_for('train_model') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Training</a>
+                <a href="{{ url_for('logout') }}" class="px-3 py-2 rounded-md bg-red-500 hover:bg-red-600 transition">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Login</a>
+                <a href="{{ url_for('register') }}" class="px-3 py-2 rounded-md hover:bg-pink-700/70 transition">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full p-0 m-0">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-red-800 via-pink-700 to-red-600 text-white p-4 text-center mt-auto">
+        <p>&copy; 2026 BloodGroup Prediction System</p>
+    </footer>
+
+</body>
+</html>

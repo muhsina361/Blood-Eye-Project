@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0c0b2f;
+        color: #ffffff;
+    }
+
+    /* Common background blur effect */
+    .blur-bg {
+        position: relative;
+        z-index: 1;
+    }
+    .blur-bg::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(5px); /* Adjust blur level here */
+        transform: scale(1.05); /* Avoid edge clipping */
+        z-index: -1;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        padding: 8rem 2rem;
+    }
+    .hero-section::before {
+        background-image: url("{{ url_for('static', filename='img/bg1.png') }}");
+        background-color: rgba(12, 11, 47, 0.6);
+        background-blend-mode: overlay;
+    }
+
+    .gradient-text {
+        background: linear-gradient(to right, #ff00ff, #00ffff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .ai-service-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .icon-box {
+        color: #ff00ff;
+    }
+
+    .learn-more-btn {
+        background: linear-gradient(to right, #ff00ff, #da00ff);
+        transition: all 0.3s ease;
+    }
+    .learn-more-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    section {
+        width: 100%;
+    }
+
+    /* Section 2 blur background */
+    .capabilities-section::before {
+        background-image: url("{{ url_for('static', filename='img/bg2.png') }}");
+        background-color: rgba(12, 11, 47, 0.6);
+        background-blend-mode: overlay;
+    }
+
+    /* Section 3 blur background */
+    .health-section::before {
+        background-image: url("{{ url_for('static', filename='img/bg3.png') }}");
+    }
+</style>
+
+<!-- Hero Section -->
+<header class="hero-section blur-bg flex items-center justify-start relative">
+    <div class="container mx-auto text-left relative z-10 max-w-3xl">
+        <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
+            Predicting Blood Group <br> through Eye Image Analysis
+        </h1>
+        <p class="text-lg md:text-xl font-semibold mb-4 gradient-text uppercase tracking-wider">
+            Non-Invasive Diagnostic Machine Learning
+        </p>
+        <p class="text-base md:text-lg text-gray-300 mb-8">
+            Our system uses advanced machine learning techniques to analyze retinal fundus and sclera images, providing accurate and non-invasive blood group predictions.
+        </p>
+        <p class="text-base md:text-lg text-gray-300">
+            By detecting subtle patterns in vascular structures and scleral coloration, our model delivers rapid and reliable results without the need for traditional blood tests.
+        </p>
+    </div>
+</header>
+
+<!-- Our Prediction Capabilities -->
+<section class="capabilities-section blur-bg py-16 md:py-24 px-4 md:px-8">
+    <div class="container mx-auto text-center mb-12">
+        <p class="text-sm font-semibold uppercase text-gray-300 mb-2">Capabilities</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white">Our Prediction Capabilities</h2>
+    </div>
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <!-- Data Preprocessing -->
+        <div class="ai-service-card p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
+            <div class="icon-box text-5xl mb-4">
+                <i class="fas fa-image"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-3">DATA PREPROCESSING</h3>
+            <p class="text-gray-300 text-sm">
+                We clean, normalize, and enhance retinal and scleral images to ensure optimal quality for analysis.
+            </p>
+        </div>
+
+        <!-- Feature Extraction -->
+        <div class="ai-service-card p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
+            <div class="icon-box text-5xl mb-4">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-3">FEATURE EXTRACTION</h3>
+            <p class="text-gray-300 text-sm">
+                Our algorithms detect vessel patterns, tortuosity, and scleral pigmentation to derive meaningful features.
+            </p>
+        </div>
+
+        <!-- Blood Group Prediction -->
+        <div class="ai-service-card p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
+            <div class="icon-box text-5xl mb-4">
+                <i class="fas fa-vial"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-3">BLOOD GROUP PREDICTION</h3>
+            <p class="text-gray-300 text-sm">
+                Using a trained deep learning model, we combine extracted features to accurately predict the user’s blood group.
+            </p>
+        </div>
+
+        <!-- Training & Analysis -->
+        <div class="ai-service-card p-6 rounded-lg shadow-lg flex flex-col items-center text-center">
+            <div class="icon-box text-5xl mb-4">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-3">TRAINING & ANALYSIS</h3>
+            <p class="text-gray-300 text-sm">
+                We generate detailed performance metrics including accuracy graphs, confusion matrices, and precision-recall charts.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Predictive Diagnostics & Health Insights -->
+<section class="health-section blur-bg py-16 md:py-24 px-4 md:px-8">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-gray-800">
+            <h3 class="text-3xl font-bold mb-4">Predictive Diagnostics</h3>
+            <p class="text-gray-600 mb-6">
+                Our system enables rapid, non-invasive blood group detection from eye images, supporting faster clinical decisions and emergency preparedness.
+            </p>
+            <ul class="mb-6 space-y-2">
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Quick and painless procedure</li>
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Ideal for emergency situations</li>
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Supports remote and rural healthcare</li>
+            </ul>
+            <button class="learn-more-btn text-white font-semibold py-3 px-6 rounded-lg shadow-md">
+                VIEW DETAILS
+            </button>
+        </div>
+        <div class="bg-white p-8 rounded-lg shadow-xl text-gray-800">
+            <h3 class="text-3xl font-bold mb-4">Health Insights</h3>
+            <p class="text-gray-600 mb-6">
+                Beyond blood group prediction, our analysis can reveal correlations between ocular features and potential health conditions.
+            </p>
+            <ul class="mb-6 space-y-2">
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Trend analysis of eye health</li>
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Data-driven medical insights</li>
+                <li class="flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i> Research-oriented datasets</li>
+            </ul>
+            <button class="learn-more-btn text-white font-semibold py-3 px-6 rounded-lg shadow-md">
+                VIEW DETAILS
+            </button>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

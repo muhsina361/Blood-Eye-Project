@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='img/bg6.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: none;
+    }
+    .content-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 160px);
+        padding: 2rem;
+    }
+    .tri-color-form {
+        background-image: linear-gradient(to right, rgba(0, 163, 255, 0.9), rgba(255, 79, 129, 0.9), rgba(0, 200, 83, 0.9));
+        backdrop-filter: blur(8px);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 1100px;
+        color: white;
+    }
+    .feature-card {
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .blood-image {
+        height: 5rem;
+        width: auto;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="tri-color-form">
+        <h2 class="text-3xl font-bold mb-6 text-center">Prediction Results</h2>
+        <div class="flex flex-col lg:flex-row lg:space-x-8 space-y-8 lg:space-y-0">
+            
+            <!-- Combined Features -->
+            <div class="flex-1 feature-card">
+                <h3 class="text-xl font-bold mb-4 text-center">Combined Features</h3>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for key, value in fundus_features.items() %}
+                    <li class="flex flex-col bg-white p-3 rounded-md shadow-sm">
+                        <span class="font-semibold text-gray-700 text-sm">{{ key }}:</span>
+                        <span class="text-gray-500 text-sm mt-1">{{ value | round(4) }}</span>
+                    </li>
+                    {% endfor %}
+                    {% for key, value in sclera_features.items() %}
+                    <li class="flex flex-col bg-white p-3 rounded-md shadow-sm">
+                        <span class="font-semibold text-gray-700 text-sm">{{ key }}:</span>
+                        <span class="text-gray-500 text-sm mt-1">{{ value | round(4) }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Predicted Blood Group -->
+            <div class="flex-1 flex flex-col justify-center items-center feature-card">
+                <h3 class="text-xl font-bold mb-4">Predicted Blood Group</h3>
+                <!-- Replaced SVG with bloodres.png -->
+                <img src="{{ url_for('static', filename='img/bloodres.png') }}" alt="Blood Result" class="blood-image">
+                <p class="text-5xl font-extrabold text-gray-800">{{ predicted_blood_group }}</p>
+                <p class="text-sm text-gray-600 mt-2 text-center">Prediction made based on combined fundus & sclera features.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
