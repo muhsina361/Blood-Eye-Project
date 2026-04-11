@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}Sclera Upload{% endblock %}
+{% block content %}
+<style>
+    .content-wrapper {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 160px);
+        padding: 2rem;
+        overflow: hidden;
+    }
+    .content-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url("{{ url_for('static', filename='img/bg5.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(5px);
+        transform: scale(1.05);
+        z-index: -1;
+    }
+    .dual-color-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        align-items: center;
+        background-image: linear-gradient(to right, rgba(255, 79, 129, 0.9), rgba(0, 163, 255, 0.9));
+        backdrop-filter: blur(8px);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+    }
+    .image-preview-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .sclera-img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .scanning-overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        color: white;
+        text-align: center;
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .scanning-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #ff4f81;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+    .scanner-line {
+        position: absolute;
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(to right, transparent, #ff4f81, transparent);
+        box-shadow: 0 0 15px rgba(255, 79, 129, 0.7);
+        animation: scan-animation 2s infinite alternate ease-in-out;
+        border-radius: 5px;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes scan-animation {
+        0% { top: 10%; }
+        100% { top: 90%; }
+    }
+    .form-section {
+        flex: 1;
+        color: white;
+    }
+    .dual-button {
+        background-image: linear-gradient(to right, #ff4f81, #00a3ff);
+    }
+    .dual-button:hover {
+        opacity: 0.9;
+    }
+    .features-list {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="dual-color-wrapper">
+        <div class="image-preview-container bg-white bg-opacity-80">
+            <img src="{{ url_for('static', filename='img/sclera.png') }}" alt="Sclera Sample" class="sclera-img" id="image-display">
+            <p id="preview-placeholder" class="absolute text-gray-500 text-center">Image Preview Here</p>
+            <div id="scanning-overlay" class="scanning-overlay">
+                <div class="spinner"></div>
+                <p class="text-lg font-bold mb-4">Scanning Image...</p>
+                <div class="scanner-line"></div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="text-2xl font-bold mb-4 text-center">Sclera Image Upload</h2>
+            <form id="sclera-upload-form" action="{{ url_for('sclera_upload') }}" method="post" enctype="multipart/form-data" class="space-y-4">
+                <label for="image" class="block">Upload your sclera image</label>
+                <input type="file" id="image" name="image" accept="image/*"
+                       class="w-full p-2 border border-gray-300 rounded-md text-gray-800 bg-white" required>
+                <button type="submit" id="extract-features-btn" class="w-full dual-button text-white p-2 rounded-md font-semibold transition">
+                    Extract Features
+                </button>
+            </form>
+
+            <p id="ajax-error-message" class="text-red-200 text-sm mt-4 text-center hidden"></p>
+
+            <div id="extracted-features-display" class="mt-8 hidden">
+                <h3 class="text-xl font-bold mb-2 text-center">Extracted Features:</h3>
+                <ul class="text-sm space-y-1 features-list" id="features-list"></ul>
+                <a href="{{ url_for('results') }}"
+                   class="mt-4 inline-block w-full text-center dual-button text-white p-2 rounded-md font-semibold transition">
+                    View Final Results
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const imageDisplay = document.getElementById('image-display');
+    const previewPlaceholder = document.getElementById('preview-placeholder');
+    const uploadForm = document.getElementById('sclera-upload-form');
+    const scanningOverlay = document.getElementById('scanning-overlay');
+    const extractFeaturesBtn = document.getElementById('extract-features-btn');
+    const extractedFeaturesDisplay = document.getElementById('extracted-features-display');
+    const featuresList = document.getElementById('features-list');
+    const errorMessageDiv = document.getElementById('ajax-error-message');
+
+    function showErrorMessage(message) {
+        errorMessageDiv.textContent = message;
+        errorMessageDiv.classList.remove('hidden');
+    }
+    function hideErrorMessage() {
+        errorMessageDiv.classList.add('hidden');
+    }
+    function stopScanning() {
+        scanningOverlay.classList.remove('active');
+        extractFeaturesBtn.disabled = false;
+        extractFeaturesBtn.textContent = 'Extract Features';
+    }
+
+    imageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageDisplay.src = e.target.result;
+                previewPlaceholder.style.display = 'none';
+                extractedFeaturesDisplay.classList.add('hidden');
+                hideErrorMessage();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imageDisplay.src = '{{ url_for('static', filename='img/sclera.png') }}';
+            previewPlaceholder.style.display = 'block';
+        }
+    });
+
+    uploadForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        hideErrorMessage();
+        extractedFeaturesDisplay.classList.add('hidden');
+
+        scanningOverlay.classList.add('active');
+        extractFeaturesBtn.disabled = true;
+        extractFeaturesBtn.textContent = 'Processing...';
+
+        const formData = new FormData(uploadForm);
+
+        fetch(uploadForm.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) throw new Error(data.error);
+
+            // Populate features
+            featuresList.innerHTML = '';
+            for (const key in data.features) {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center bg-white p-2 rounded-md shadow-sm';
+                li.innerHTML = `<span class="font-semibold text-gray-700">${key}:</span> <span class="text-gray-500">${data.features[key].toFixed(4)}</span>`;
+                featuresList.appendChild(li);
+            }
+            extractedFeaturesDisplay.classList.remove('hidden');
+
+            // Load processed image, ensure overlay stops even if cached
+            const processedImg = new Image();
+            processedImg.onload = function() {
+                imageDisplay.src = processedImg.src;
+                stopScanning();
+            };
+            processedImg.onerror = function() {
+                stopScanning();
+            };
+            processedImg.src = data.processed_image_path + '?t=' + new Date().getTime(); // cache-bust
+
+            // Fallback: Ensure overlay stops even if load event fails
+            setTimeout(stopScanning, 2000);
+        })
+        .catch(error => {
+            stopScanning();
+            console.error('Extraction Error:', error);
+            showErrorMessage('Failed to extract features: ' + error.message);
+        });
+    });
+});
+</script>
+{% endblock %}

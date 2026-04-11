@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<style>
+    .content-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 160px); /* accounts for navbar + footer height */
+        background-image: url("{{ url_for('static', filename='img/bg3.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .dual-color-form {
+        background-image: linear-gradient(to right, #ff4f81, #28e98c); /* Pink → Green */
+    }
+    .form-container {
+        background: linear-gradient(to right, rgba(255, 79, 129, 0.85), rgba(40, 233, 140, 0.85)); /* Overlay gradient */
+        backdrop-filter: blur(8px);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="form-container">
+        <h2 class="text-2xl font-bold mb-4 text-white text-center">Create a New Account</h2>
+        <form action="{{ url_for('register') }}" method="post" class="space-y-4">
+            {% if error %}
+            <p class="text-red-200 text-sm text-center">{{ error }}</p>
+            {% endif %}
+            <div>
+                <label for="username" class="block text-white">Username</label>
+                <input type="text" id="username" name="username" class="w-full mt-1 p-2 border border-gray-300 rounded-md" required>
+            </div>
+            <div>
+                <label for="password" class="block text-white">Password</label>
+                <input type="password" id="password" name="password" class="w-full mt-1 p-2 border border-gray-300 rounded-md" required>
+            </div>
+            <button type="submit" class="w-full dual-color-form text-white font-semibold p-2 rounded-md hover:opacity-90 transition">
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
