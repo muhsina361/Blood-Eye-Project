@@ -21,8 +21,15 @@ import uuid
 # Import updated feature extraction functions
 from feature_Code_fundus import extract_fundus_features
 from feature_Code_scelera import extract_sclera_features
+from datetime import datetime
+
+
 
 app = Flask(__name__)
+
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}
 app.secret_key = 'your_secret_key'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['STATIC_FOLDER'] = 'static'
